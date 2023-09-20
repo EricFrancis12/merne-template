@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Page</title>
+
+    <script src="/assets/js/assets.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="m-4">
+    <div class="flex flex-col items-center justify-center gap-4">
+        <div>
+            <h1>Testing Page</h1>
+        </div>
+        <div class="border border-solid border-black p-2">
+            <form id="form">
+                <div class="flex flex-col items-start gap-4 mb-4">
+                    <input type="text" name="url" id="url" placeholder="Enter url..." class="border border-black p-1">
+                    <select name="method" id="method">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                    <input type="text" name="data" id="data" placeholder="Enter some data..."
+                        class="border border-black p-1">
+                </div>
+                <div class="flex flex-col justify-center items-center">
+                    <button type="submit" class="border border-black bg-green-500 p-1 rounded-lg">Make Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.querySelector('#form');
+        form.addEventListener('submit', handleSubmit);
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const url = document.querySelector('input#url').value;
+            const method = document.querySelector('input#method').value;
+            const data = document.querySelector('input#data').value;
+
+            if (!url) {
+                return Swal.fire({
+                    text: 'Please enter a valid URL',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                });
+            }
+
+            const headers = method !== 'GET'
+                ? { 'Content-Type': 'application/json' }
+                : undefined;
+
+            const body = method !== 'GET'
+                ? JSON.stringify({ data })
+                : undefined;
+
+            const res = await fetch(url, {
+                headers,
+                method,
+                body
+            })
+                .then(data => data.json());
+
+            console.log(res);
+
+            if (!res.ok) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: res.message || 'Server responded with error...',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Server response:',
+                    text: JSON.stringify(res, null, 4),
+                    icon: 'success',
+                    confirmButtonText: 'Okay'
+                });
+            }
+        }
+
+    </script>
+</body>
+
+</html>
